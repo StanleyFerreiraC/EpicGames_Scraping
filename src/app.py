@@ -117,7 +117,7 @@ def wpp_message(games):
 
     search_box = driver.find_element(By.XPATH, '//div[contains(@class, "x1hx0egp x6ikm8r x1odjw0f x6prxxf x1k6rcq7 x1whj5v")]')
     search_box.click()
-    search_box.send_keys('Os MORCEGÃO')
+    search_box.send_keys('Seu Grupo')
     search_box.send_keys(Keys.ENTER)
     time.sleep(1)
 
