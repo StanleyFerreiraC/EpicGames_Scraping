@@ -7,6 +7,8 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 from webdriver_manager.chrome import ChromeDriverManager
 import pyperclip
@@ -75,8 +77,8 @@ def scrape_data():
         print("Nenhum jogo gratuito encontrado na Epic Games Store.")
         return
     
-    wpp_message(games)
     write_data(games)
+    wpp_message(games)
     
 
 
@@ -86,7 +88,7 @@ def check_duplicate(game_name, offer_period):
     """
     fieldnames = ['game_name', 'offer_period', 'store_link', 'date_written', 'logo_link']
     try:
-        with open('EGS_Data.csv', 'r', newline='') as f:
+        with open('historico_jogos.csv', 'r', newline='') as f:
             reader = csv.DictReader(f, fieldnames=fieldnames)
             for line in reader:
                 if line['game_name'] == game_name and line['offer_period'] == offer_period:
@@ -101,7 +103,7 @@ def write_data(games):
     Escreve os dados dos jogos em um arquivo CSV.
     """
     fieldnames = ['game_name', 'offer_period', 'store_link', 'date_written', 'logo_link']
-    with open('H:\Projetos\EpicGames\dags\EGS_Data.csv', 'a', newline='') as f:
+    with open('H:\Projetos\EpicGames\EpicGames_Scraping\src\historico_jogos.csv', 'a', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         for game in games:
             writer.writerow(game)
@@ -113,11 +115,12 @@ def wpp_message(games):
     """
     driver = setup_driver(user_data_dir="C:/Users/stanl/AppData/Local/Google/Chrome/User Data")
     driver.get('https://web.whatsapp.com')
-    time.sleep(10)
 
-    search_box = driver.find_element(By.XPATH, '//div[contains(@class, "x1hx0egp x6ikm8r x1odjw0f x6prxxf x1k6rcq7 x1whj5v")]')
+    search_box = WebDriverWait(driver, 20).until(
+    EC.presence_of_element_located((By.XPATH, '//div[contains(@class, "x1hx0egp x6ikm8r x1odjw0f x6prxxf x1k6rcq7 x1whj5v")]'))
+)
     search_box.click()
-    search_box.send_keys('Os MORCEGÃO')
+    search_box.send_keys('EpicGames')
     search_box.send_keys(Keys.ENTER)
     time.sleep(1)
 
@@ -140,7 +143,7 @@ def send_game_message(driver, game):
     time.sleep(0.2)
 
     # Lista de comandos para enviar menções no WhatsApp
-    mentions = ['@G', '@B', '@E', '@W', '@S', '@L', '@R', '@GUI']
+    mentions = ['@G','@S']
 
     for mention in mentions:
         message_box.send_keys(f' {mention}')
